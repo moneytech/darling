@@ -1,31 +1,19 @@
-[![Stories in Ready](https://badge.waffle.io/darlinghq/darling.png?label=ready&title=Ready)](https://waffle.io/darlinghq/darling)
 # Darling
 
 ![Darling logo](http://darlinghq.org/img/darling250.png)
 
-Darling is a runtime environment for OS X applications.
+Darling is a runtime environment for macOS applications.
 
-Please note that no GUI applications are supported at the moment.
+Please note that most GUI applications will not run at the moment.
 
 ## Download
 
-Darling uses many Git submodules, so a plain clone will not do.
-
-````
-git clone --recurse-submodules https://github.com/darlinghq/darling.git
-````
-
-Updating sources:
-
-````
-git pull
-git submodule init
-git submodule update
-````
+Packages for some distributions are available for download
+under [releases](https://github.com/darlinghq/darling/releases).
 
 ## Build Instructions
 
-For complete instructions, visit [DarlingHQ Wiki](https://wiki.darlinghq.org/build_instructions).
+For build instructions, visit [DarlingHQ Wiki](https://wiki.darlinghq.org/build_instructions).
 
 ### Prefixes
 
@@ -53,7 +41,7 @@ $ darling shell
 Darling [~]$ installer -pkg mc-4.8.7-0.pkg -target /
 ````
 
-If you have previously downloaded the Midnight Commander package from [Rudix](http://rudix.org), you can now run `mc` to start MC for OS X. For easier installation, install the Rudix Package Manager. Note that not all Rudix packages may work under Darling.
+The Midnight Commander package from the above example is [available for download](https://osdn.net/projects/darling/storage/apps/mc-4.8.7-0.pkg).
 
 You can uninstall and list packages with the `uninstaller` command.
 
@@ -74,3 +62,11 @@ Hello world
 
 Congratulations, you have just compiled and run your own Hello world application with Apple's toolchain.
 
+### Working with XIP archives
+
+Xcode is now distributed in `.xip` files. These can be installed using `unxip`:
+
+```
+cd /Applications
+unxip Xcode_11.3.xip
+```

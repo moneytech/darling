@@ -82,6 +82,41 @@ __attribute__((constructor))
 }
 #endif
 
+static unsigned long processEnvVariable(const char* var)
+{
+	if (strncmp(var, "HOME=", 5) == 0)
+	{
+		char* home = (char*) malloc(512);
+		char* symlink_path = (char*) malloc(strlen(var+5) + 10);
+
+		strcpy(symlink_path, var+5);
+		strcat(symlink_path, "/LinuxHome");
+
+		int len = readlink(symlink_path, home, 512-1);
+		free(symlink_path);
+
+		if (len < 0)
+		{
+			free(home);
+			goto out;
+		}
+		home[len] = '\0';
+
+		if (strncmp(home, SYSTEM_ROOT, sizeof(SYSTEM_ROOT) - 1) != 0)
+		{
+			free(home);
+			goto out;
+		}
+
+		strcpy(home, "HOME=");
+		memmove(home+5, home + sizeof(SYSTEM_ROOT) - 1, len - sizeof(SYSTEM_ROOT) + 2);
+
+		return (unsigned long) home;
+	}
+out:
+	return (unsigned long) var;
+}
+
 void run(const char* path, const char** envp)
 {
 	struct loader_context lc;
@@ -131,7 +166,7 @@ void run(const char* path, const char** envp)
 
 
 	for (int i = 0; envp[i] != NULL; i++)
-		stack[pos++] = (unsigned long) envp[i];
+		stack[pos++] = processEnvVariable(envp[i]);
 
 #ifdef __linux__ // For testing
 	getrandom(entropy, sizeof(entropy), 0);

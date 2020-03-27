@@ -94,6 +94,7 @@
 #include "signal/sigreturn.h"
 #include "signal/sigprocmask.h"
 #include "signal/sigsuspend.h"
+#include "signal/sigpending.h"
 #include "signal/sigwait.h"
 #include "process/vfork.h"
 #include "process/wait4.h"
@@ -169,7 +170,12 @@
 #include "bsdthread/pthread_canceled.h"
 #include "hfs/stub.h"
 #include "xattr/getattrlistbulk.h"
+#include "xattr/getattrlist.h"
+#include "xattr/fgetattrlist.h"
 #include "xattr/getattrlistat.h"
+#include "xattr/setattrlistat.h"
+#include "xattr/setattrlist.h"
+#include "xattr/fsetattrlist.h"
 #include "xattr/listxattr.h"
 #include "xattr/flistxattr.h"
 #include "xattr/removexattr.h"
@@ -197,6 +203,10 @@
 #include "bsdthread/pthread_kill.h"
 #include "conf/pathconf.h"
 #include "conf/fpathconf.h"
+#include "sysv_sem/semctl.h"
+#include "sysv_sem/semget.h"
+#include "sysv_sem/semop.h"
+#include "mach/audit_session_self.h"
 
 void* __bsd_syscall_table[600] = {
 	[0] = sys_syscall,
@@ -240,6 +250,7 @@ void* __bsd_syscall_table[600] = {
 	[48] = sys_sigprocmask,
 	[49] = sys_getlogin,
 	[50] = sys_setlogin,
+	[52] = sys_sigpending,
 	[53] = sys_sigaltstack,
 	[54] = sys_ioctl,
 	[55] = sys_reboot,
@@ -341,6 +352,9 @@ void* __bsd_syscall_table[600] = {
 	[241] = sys_flistxattr,
 	[243] = sys_initgroups,
 	[244] = sys_posix_spawn,
+	[254] = sys_semctl,
+	[255] = sys_semget,
+	[256] = sys_semop,
 	[266] = sys_shm_open,
 	[267] = sys_shm_unlink,
 	[268] = sys_sem_open,
@@ -424,6 +438,7 @@ void* __bsd_syscall_table[600] = {
 	[420] = sys_sem_wait_nocancel,
 	[422] = sys_sigwait_nocancel,
 	[423] = sys_semwait_signal_nocancel,
+	[428] = sys_audit_session_self,
 	[441] = sys_guarded_open_np,
 	[442] = sys_guarded_close_np,
 	[443] = sys_guarded_kqueue_np,
@@ -445,5 +460,6 @@ void* __bsd_syscall_table[600] = {
 	[500] = sys_getentropy,
 	[515] = sys_ulock_wait,
 	[516] = sys_ulock_wake,
+	[524] = sys_setattrlistat,
 };
 

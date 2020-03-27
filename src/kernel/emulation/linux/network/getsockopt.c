@@ -43,6 +43,12 @@ long sys_getsockopt(int fd, int level, int optname, void* optval, int* optlen)
 				struct linger* l = (struct linger*) optval;
 				l->l_linger *= LINGER_TICKS_PER_SEC;
 			}
+			else if (optname == BSD_SO_ERROR)
+			{
+				int* err = (int*) optval;
+				if (err && *err)
+					*err = errno_linux_to_bsd(*err);
+			}
 		}
 	}
 
@@ -51,7 +57,8 @@ long sys_getsockopt(int fd, int level, int optname, void* optval, int* optlen)
 
 int sockopt_bsd_to_linux(int* level, int* optname, void** optval, void* optbuf)
 {
-	if (*optname == LOCAL_PEERCRED)
+	/* TCP_NODELAY and LOCAL_PEERCRED both have values of 1 */
+	if (*optname == LOCAL_PEERCRED && *level == IPPROTO_IP)
 	{
 		struct xucred* c = (struct xucred*) optbuf;
 		// Simulate euid 0

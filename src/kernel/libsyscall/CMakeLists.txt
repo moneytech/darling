@@ -21,7 +21,7 @@ add_definitions('-D__XNU_PRIVATE_EXTERN=')
 add_definitions(-DIOKIT_ALL_IPC=1 -DIOKIT=1)
 #add_definitions(-DKERNEL)
 
-include_directories(${CMAKE_SOURCE_DIR}/src/lkm/osfmk)
+include_directories(${CMAKE_SOURCE_DIR}/src/external/lkm/osfmk)
 set(MIG_USER_HEADER_SUFFIX "_internal.h")
 mig(mach/host_priv.defs)
 mig(mach/host_security.defs)
@@ -37,6 +37,7 @@ mig(mach/processor.defs)
 mig(mach/task.defs)
 mig(mach/thread_act.defs)
 mig(mach/vm_map.defs)
+mig(mach/exc.defs)
 mig(device/device.defs)
 
 set(syscall_legacy_sources
@@ -114,6 +115,7 @@ set(syscall_sources
 	wrappers/unlinkat.c
 	wrappers/unlink.c
 	wrappers/work_interval.c
+	wrappers/utimensat.c
 
 	wrappers/legacy/select-pre1050.c
 	
@@ -156,6 +158,8 @@ set(syscall_sources
 	${CMAKE_CURRENT_BINARY_DIR}/mach/vm_mapUser.c
 	${CMAKE_CURRENT_BINARY_DIR}/mach/clockUser.c
 	${CMAKE_CURRENT_BINARY_DIR}/device/deviceUser.c
+	${CMAKE_CURRENT_BINARY_DIR}/mach/excServer.c
+	${CMAKE_CURRENT_BINARY_DIR}/mach/excUser.c
 	
 	mach/mach_init.c
 	mach/clock_sleep.c
@@ -257,6 +261,7 @@ set(syscall_sources
 	bsdsyscalls/_fremovexattr.S
 	bsdsyscalls/_fsctl.S
 	bsdsyscalls/_fsetattrlist.S
+	bsdsyscalls/_setattrlistat.S
 	bsdsyscalls/_fsetxattr.S
 	bsdsyscalls/_fsgetpath.S
 	bsdsyscalls/___fsgetpath.S
@@ -617,17 +622,17 @@ foreach (file IN ITEMS ${syscall_legacy_sources})
 	set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS "${CMAKE_C_FLAGS} -U_DARWIN_C_SOURCE -U_POSIX_C_SOURCE -U__DARWIN_UNIX03 -D__DARWIN_UNIX03=0  -U__DARWIN_C_LEVEL")
 endforeach(file)
 
-add_library(libsyscall OBJECT ${syscall_sources})
-add_library(libsyscall_dynamic OBJECT ${syscall_dynamic_sources})
+add_darling_object_library(libsyscall ${syscall_sources})
+add_darling_object_library(libsyscall_dynamic ${syscall_dynamic_sources})
 make_fat(libsyscall)
 make_fat(libsyscall_dynamic)
 
-#add_library(libsyscall_static OBJECT wrappers/_libc_funcptr.c)
+#add_darling_object_library(libsyscall_static wrappers/_libc_funcptr.c)
 #set_target_properties(libsyscall_static PROPERTIES COMPILE_FLAGS "-DVARIANT_DYLD")
 #make_fat(libsyscall_static)
 
 # For i386
-#add_library(libsyscall_legacy_extra OBJECT wrappers/legacy/select.c)
+#add_darling_object_library(libsyscall_legacy_extra wrappers/legacy/select.c)
 #set_target_properties(libsyscall_legacy_extra PROPERTIES COMPILE_FLAGS
 #	"${CMAKE_C_FLAGS} -U_DARWIN_C_SOURCE -U_POSIX_C_SOURCE -U__DARWIN_UNIX03 -D__DARWIN_UNIX03=0 -U__DARWIN_C_LEVEL")
 

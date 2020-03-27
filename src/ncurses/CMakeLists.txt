@@ -2,7 +2,7 @@ project(ncurses-top)
 
 cmake_minimum_required(VERSION 2.4.0)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostdinc")
+add_definitions(-nostdinc)
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -nostdlib")
 
 include_directories(${DARLING_TOP_DIRECTORY}/platform-include)
@@ -34,7 +34,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/progs)
 add_darling_executable(clear progs/clear.c)
 target_link_libraries(clear ncurses)
 
-add_library(nc_dump_entry OBJECT progs/dump_entry.c)
+add_darling_object_library(nc_dump_entry progs/dump_entry.c)
 
 add_darling_executable(infocmp progs/infocmp.c $<TARGET_OBJECTS:nc_dump_entry>)
 target_link_libraries(infocmp ncurses)

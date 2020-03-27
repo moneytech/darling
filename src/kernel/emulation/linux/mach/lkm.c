@@ -1,5 +1,5 @@
 #include "lkm.h"
-#include "../../lkm/api.h"
+#include "../../external/lkm/api.h"
 #include "../signal/sigexc.h"
 #include "../base.h"
 #include "../linux-syscalls/linux.h"
@@ -86,7 +86,7 @@ int lkm_call_raw(int call_nr, void* arg)
        return __real_ioctl_raw(driver_fd, call_nr, arg);
 }
 
-
+__attribute__((visibility("default")))
 int mach_driver_get_fd(void)
 {
 	return driver_fd;

@@ -10,8 +10,8 @@
 kern_return_t		mach_timebase_info_trap_impl(
 						mach_timebase_info_t	info)
 {
-	info->numer = NSEC_PER_SEC;
-	info->denom = NSEC_PER_SEC;
+	info->numer = 1;
+	info->denom = 1;
 	return KERN_SUCCESS;
 }
 
@@ -21,7 +21,7 @@ kern_return_t		mach_wait_until_impl(
 	struct timespec ts = { deadline / NSEC_PER_SEC, deadline % NSEC_PER_SEC };
 	
 do_sleep:
-	if (clock_sleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, 0) == -1)
+	if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, 0) == -1)
 	{
 		if (errno == EINTR)
 			goto do_sleep;

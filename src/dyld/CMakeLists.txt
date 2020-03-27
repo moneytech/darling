@@ -8,8 +8,9 @@ endif(COMMAND cmake_policy)
 
 include (darling_exe)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostdinc")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdinc -std=c++11 -include ${CMAKE_SOURCE_DIR}/src/duct/include/CrashReporterClient.h")
+add_definitions(-nostdinc)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -include ${CMAKE_SOURCE_DIR}/src/duct/include/CrashReporterClient.h")
 set(CMAKE_SHARED_LINKER_FLAGS_SAVED "${CMAKE_SHARED_LINKER_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -nostdlib -Wl,-bind_at_load -Wl,-flat_namespace -Wl,-undefined,suppress")
 
@@ -87,10 +88,18 @@ use_ld64(system_loader)
 set_target_properties(system_loader PROPERTIES OUTPUT_NAME "dyld")
 set_property(TARGET system_loader APPEND_STRING PROPERTY LINK_FLAGS " -Wl,-dylinker -Wl,-dead_strip -nostdlib -Wl,-e,__dyld_start -Wl,-image_base,0x1fe00000")
 target_link_libraries(system_loader libc_static system_blocks_static
-	libc_static32 libc_static64 cxx_static
+	cxx_static
 	unwind_static system_kernel_static system_m_static cxxabi_static
-	keymgr_static compiler_rt_static32 compiler_rt_static64 system_duct_static
-	platform_static32 platform_static64 pthread_static macho_static)
+	keymgr_static system_duct_static
+	pthread_static macho_static)
+
+if (TARGET_i386)
+	target_link_libraries(system_loader libc_static32 compiler_rt_static32 platform_static32)
+endif (TARGET_i386)
+
+if (TARGET_x86_64)
+	target_link_libraries(system_loader libc_static64 compiler_rt_static64 platform_static64)
+endif (TARGET_x86_64)
 
 make_fat(system_loader)
 

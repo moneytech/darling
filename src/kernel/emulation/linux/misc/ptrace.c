@@ -11,7 +11,7 @@
 #include "../signal/sigexc.h"
 #include "../process/wait4.h"
 #include "../mach/lkm.h"
-#include "../../../../lkm/api.h"
+#include "../../../../external/lkm/api.h"
 #include "../unistd/getppid.h"
 
 // faster than sys_getpid(), because it caches the PID
@@ -117,6 +117,7 @@ long sys_ptrace(int request, int pid, void* addr, int data)
 		}
 		case PT_SIGEXC:
 		{
+			lkm_call(0x1028, "sigexc: self via ptrace\n");
 			darling_sigexc_self();
 			ret = 0;
 

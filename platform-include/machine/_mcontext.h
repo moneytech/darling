@@ -27,6 +27,8 @@
  */
 #if defined (__i386__) || defined (__x86_64__)
 #include "i386/_mcontext.h"
+#elif defined(__ppc__)
+#include "ppc/_mcontext.h"
 #else
 #error architecture not supported
 #endif
